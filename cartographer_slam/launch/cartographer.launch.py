@@ -7,6 +7,7 @@ def generate_launch_description():
 
     cartographer_config_dir = os.path.join(get_package_share_directory('cartographer_slam'), 'config')
     configuration_basename = 'cartographer.lua'
+    rviz_file = os.path.join(get_package_share_directory('cartographer_slam'), 'rviz', 'sim_cartographer.rviz')
 
     return LaunchDescription([
         
@@ -25,6 +26,12 @@ def generate_launch_description():
             output='screen',
             name='occupancy_grid_node',
             parameters=[{'use_sim_time': True}],
-            arguments=['-resolution', '0.05', '-publish_period_sec', '1.0']
-        ),
+            arguments=['-resolution', '0.05', '-publish_period_sec', '1.0']),
+
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz_node',
+            parameters=[{'use_sim_time': True}],
+            arguments=['-d', rviz_file])
     ]) 
