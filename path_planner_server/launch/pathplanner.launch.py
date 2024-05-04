@@ -13,7 +13,7 @@ def launch_setup(command, *args, **kwargs):
     if mode == 'real':
         planner_yaml = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'planner_server.yaml')
         controller_yaml = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'controller.yaml')
-        rviz_config_dir = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'pathplanning.rviz')
+        rviz_config_dir = os.path.join(get_package_share_directory('path_planner_server'), 'rviz', 'real_pathplanning.rviz')
         recovery_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'recovery.yaml')
         cmd_vel_remap = '/cmd_vel'
         use_sim_time = False
@@ -21,7 +21,7 @@ def launch_setup(command, *args, **kwargs):
     else:
         planner_yaml = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'sim_planner_server.yaml')
         controller_yaml = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'sim_controller.yaml')
-        rviz_config_dir = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'sim_pathplanning.rviz')
+        rviz_config_dir = os.path.join(get_package_share_directory('path_planner_server'), 'rviz', 'sim_pathplanning.rviz')
         recovery_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'sim_recovery.yaml')
         cmd_vel_remap = '/diffbot_base_controller/cmd_vel_unstamped'
         use_sim_time = True
