@@ -190,22 +190,18 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         robot_evelator_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         robot_evelator_platform_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         robot_front_cover_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         robot_front_laser_base_link:
           Alpha: 1
           Show Axes: false
@@ -240,7 +236,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -431,10 +426,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 0.6897960901260376
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.208583354949951
+      Yaw: 0.015397694893181324
     Saved: ~
 Window Geometry:
   Displays:
