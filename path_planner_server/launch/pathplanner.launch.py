@@ -15,6 +15,7 @@ def launch_setup(command, *args, **kwargs):
         controller_yaml = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'controller.yaml')
         rviz_config_dir = os.path.join(get_package_share_directory('path_planner_server'), 'rviz', 'real_pathplanning.rviz')
         recovery_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'recovery.yaml')
+        filters_yaml = os.path.join(get_package_share_directory('path_planner_server'), 'config', 'filter.yaml')        
         cmd_vel_remap = '/cmd_vel'
         use_sim_time = False
         
