@@ -19,13 +19,57 @@ from copy import deepcopy
 from geometry_msgs.msg import PoseStamped
 from rclpy.duration import Duration
 import rclpy
+from rclpy.node import Node
+from attach_shelf.srv import GoToLoading
+from geometry_msgs.msg import Polygon, Point32
+from std_msgs.msg import String
+from geometry_msgs.msg import Twist
 
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
 
+# Client for shelf lifting service
+class ClientAsync(Node):
+    def __init__(self):
+        super().__init__('go_to_loading')
+        self.client = self.create_client(GoToLoading, 'approach_shelf')
+        while not self.client.wait_for_service(timeout_sec=1.0):
+            self.get_logger().info('Service not available, waiting again...')
+
+    def send_request(self):
+        req = GoToLoading.Request()
+        req.attach_to_shelf = True
+        self.future = self.client.call_async(req)
+
+class ElevatorPublisher(Node):
+    def __init__(self):
+        super().__init__('elevator_publisher')
+        self.publisher_ = self.create_publisher(String, '/elevator_down', 10)
+        self.lift_publisher_ = self.create_publisher(String, '/elevator_up', 10)
+
+    def drop(self):
+        msg = String()
+        self.publisher_.publish(msg)
+        time.sleep(6)
+        self.get_logger().info(f'Shelf unloaded')
+        return None
+
+    def lift(self):
+        msg = String()
+        self.lift_publisher_.publish(msg)
+        time.sleep(6)
+        self.get_logger().info(f'Shelf loaded')
+        return None
+
+    def wait(self):
+        duration = Duration(seconds=10)
+        rate = self.create_rate(10, self.get_clock())
+        start_time = self.get_clock().now()
+        while rclpy.ok() and (self.get_clock().now() - start_time) < duration:
+            rate.sleep
 # Shelf positions for picking
 shelf_positions = {
     "init_position": [0.0, 0.0, 0.0, 1.0],
-    "loading_position": [5.651804, -0.172123, -0.762900, 0.646515],
+    "loading_position": [5.65071, -0.303011, -0.701128, 0.713036],
     }
 
 # Shipping destination for picked products
@@ -60,10 +104,11 @@ def main():
     initial_pose.pose.position.y = shelf_positions['init_position'][1]
     initial_pose.pose.orientation.z = shelf_positions['init_position'][2]
     initial_pose.pose.orientation.w = shelf_positions['init_position'][3]
-    navigator.setInitialPose(initial_pose)
+    
 
     # Wait for navigation to activate fully
     navigator.waitUntilNav2Active()
+    navigator.setInitialPose(initial_pose)
 
     shelf_item_pose = PoseStamped()
     shelf_item_pose.header.frame_id = 'map'
@@ -92,14 +137,6 @@ def main():
     if result == TaskResult.SUCCEEDED:
         print('Got product from ' + request_item_location +
               '! Bringing product to shipping destination (' + request_destination + ')...')
-        shipping_destination = PoseStamped()
-        shipping_destination.header.frame_id = 'map'
-        shipping_destination.header.stamp = navigator.get_clock().now().to_msg()
-        shipping_destination.pose.position.x = shipping_destinations[request_destination][0]
-        shipping_destination.pose.position.y = shipping_destinations[request_destination][1]
-        shipping_destination.pose.orientation.z = shipping_destinations[request_destination][2]
-        shipping_destination.pose.orientation.w = shipping_destinations[request_destination][3]
-        navigator.goToPose(shipping_destination)
 
     elif result == TaskResult.CANCELED:
         print('Task at ' + request_item_location +
@@ -111,10 +148,40 @@ def main():
         print('Task at ' + request_item_location + ' failed!')
         exit(-1)
 
+    # Instance the elevator publisher
+    elevator_publisher = ElevatorPublisher()
+    
+    # Instance the service client for shelf lifting
+    for n in range(5):
+        client = ClientAsync()
+        print(f'Attempt {n+1}: Calling shelf lifting service.')
+        client.send_request()
+
+        while rclpy.ok():
+            rclpy.spin_once(client)
+            if client.future.done():
+                try:
+                    response = client.future.result()
+                except Exception as e:
+                    client.get_logger().info(
+                        'Service call failed %r' % (e,))
+                else:
+                    client.get_logger().info(f'Result of service call: {response.complete}')
+                    
+                break
+
+        client.destroy_node()
+        if response.complete == True:
+            elevator_publisher.lift()
+            break
+
+    if n + 1 == 5: exit(-1)
+
     while not navigator.isTaskComplete():
         pass
 
     exit(0)
+
 
 
 if __name__ == '__main__':

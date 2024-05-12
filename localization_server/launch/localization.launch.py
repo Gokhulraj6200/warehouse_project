@@ -46,11 +46,10 @@ def launch_setup(command, *args, **kwargs):
                         {'node_names': ['map_server', 'amcl']}]),
 
         Node(
-            package='rviz2',
-            executable='rviz2',
-            name='rviz_node',
-            parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['-d', rviz_config_dir])
+            package='attach_shelf',
+            executable='approach_service_server',
+            name='approach_service_server',
+            output='screen'),
     ]
 
 def generate_launch_description():
