@@ -2,26 +2,33 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include <vector>
-#include <cmath>
-#include <future>
-
 #include "attach_shelf/srv/go_to_loading.hpp"
-#include "geometry_msgs/msg/transform_stamped.hpp"
-#include "geometry_msgs/msg/twist.hpp"
 #include "rclcpp/duration.hpp"
 #include "rclcpp/logging.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp/timer.hpp"
 #include "rclcpp/utilities.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
+#include <vector>
+#include <cmath>
+#include "geometry_msgs/msg/transform_stamped.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+#include "std_msgs/msg/detail/empty__struct.hpp"
 #include "tf2/exceptions.h"
-#include "tf2_ros/buffer.h"
-#include "tf2_ros/static_transform_broadcaster.h"
-#include "tf2_ros/transform_listener.h"
-#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2/time.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "tf2/transform_datatypes.h"
+#include "tf2_ros/static_transform_broadcaster.h"
+#include "std_msgs/msg/empty.hpp"
+#include "std_msgs/msg/string.hpp"
+#include <future>
 
+using GoToLoading = attach_shelf::srv::GoToLoading;
+using LaserScan = sensor_msgs::msg::LaserScan;
+using Twist = geometry_msgs::msg::Twist;
+using String = std_msgs::msg::String;
 using namespace std::placeholders;
 using namespace std::chrono_literals;
 
@@ -31,25 +38,27 @@ public:
     ApproachShelf() : Node("approach_service_server") {
         // Create a subscription for LaserScan messages
         auto laser_callable = std::bind(&ApproachShelf::laser_callback, this, _1);
-        _laser_subscription = this->create_subscription<sensor_msgs::msg::LaserScan>("/scan", 1, laser_callable);
+        _laser_subscription = this->create_subscription<LaserScan>("/scan", 1, laser_callable);
         // Create the service server
         auto callable_handle = std::bind(&ApproachShelf::handle_service, this, _1, _2);
-        _service = this->create_service<attach_shelf::srv::GoToLoading>("approach_shelf", callable_handle);
+        _service = this->create_service<GoToLoading>("approach_shelf", callable_handle);
         // Initialize transform buffer and listener
         _tf_buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
         _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer);
         // Intizalize static transform broadcaster
         _tf_static_broadcaster = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
-        // Create a publisher for /cmd_vel
-        _publisher = this->create_publisher<geometry_msgs::msg::Twist>("/cmd_vel", 1);
+        // Create a publisher for Twist anc Empty messages
+        _publisher = this->create_publisher<Twist>("/cmd_vel", 1);
+        _elevator_publisher = this->create_publisher<String>("/elevator_up", 1);
         // Inform server creation
         RCLCPP_INFO(this->get_logger(), "Service server started.");
     }
 private:
     // General attributes
-    rclcpp::Service<attach_shelf::srv::GoToLoading>::SharedPtr _service;
-    rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr _laser_subscription;
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr _publisher;
+    rclcpp::Service<GoToLoading>::SharedPtr _service;
+    rclcpp::Subscription<LaserScan>::SharedPtr _laser_subscription;
+    rclcpp::Publisher<Twist>::SharedPtr _publisher;
+    rclcpp::Publisher<String>::SharedPtr _elevator_publisher;
 
     // Scanning attributes
     int _num_legs = 0;
@@ -65,11 +74,11 @@ private:
     // Final approach attributes
 
     // Methods
-    void handle_service(const std::shared_ptr<attach_shelf::srv::GoToLoading::Request> request, std::shared_ptr<attach_shelf::srv::GoToLoading::Response> response) {
+    void handle_service(const std::shared_ptr<GoToLoading::Request>, std::shared_ptr<GoToLoading::Response> response) {
         // Handle request
         RCLCPP_INFO(this->get_logger(), "Legs detected: %i.", _num_legs);
         RCLCPP_INFO(this->get_logger(), "L: %i R: %i.", _leg_data[0].first, _leg_data[1].first);
-      if (request->attach_to_shelf){  
+        
         if (_num_legs == 2) {
             // Publish cart frame
             RCLCPP_INFO(this->get_logger(), "Publishing cart frame.");
@@ -82,6 +91,7 @@ private:
                 response->complete = false;
                 return;
             }
+
             if (!this->approach_cart("robot_front_laser_link", "cart_center")) {
                 RCLCPP_INFO(this->get_logger(), "The robot did not get under the cart correctly.");
                 response->complete = false;
@@ -93,10 +103,9 @@ private:
             RCLCPP_ERROR(this->get_logger(), "Not enough legs, aborting approach.");
             response->complete = false;
         }   
-      }
     }
 
-    void laser_callback(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
+    void laser_callback(const LaserScan::SharedPtr msg) {
         int legs = 0;
         _total_readings = int(msg->ranges.size());
         _leg_data.clear();
@@ -234,7 +243,7 @@ private:
                     float error_yaw = std::atan2(y, x);
                     RCLCPP_DEBUG(this->get_logger(), "Error distance: %.4f", error_distance);
                     RCLCPP_DEBUG(this->get_logger(), "Error yaw: %.4f", error_yaw);
-                    geometry_msgs::msg::Twist vel_msg;
+                    Twist vel_msg;
                     if (error_distance > 0.02) {
                         //  Set velocity
                         vel_msg.angular.z = -1.0 * error_yaw;  
