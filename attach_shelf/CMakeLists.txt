@@ -32,12 +32,17 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-add_executable(approach_service_server src/approach_service_server.cpp)
-ament_target_dependencies(approach_service_server rclcpp geometry_msgs nav_msgs sensor_msgs tf2 tf2_geometry_msgs tf2_ros)
-rosidl_target_interfaces(approach_service_server ${PROJECT_NAME} "rosidl_typesupport_cpp")
+add_executable(approach_service_server_real src/approach_service_server_real.cpp)
+ament_target_dependencies(approach_service_server_real rclcpp geometry_msgs nav_msgs sensor_msgs tf2 tf2_geometry_msgs tf2_ros)
+rosidl_target_interfaces(approach_service_server_real ${PROJECT_NAME} "rosidl_typesupport_cpp")
+
+add_executable(approach_service_server_sim src/approach_service_server_sim.cpp)
+ament_target_dependencies(approach_service_server_sim rclcpp geometry_msgs nav_msgs sensor_msgs tf2 tf2_geometry_msgs tf2_ros)
+rosidl_target_interfaces(approach_service_server_sim ${PROJECT_NAME} "rosidl_typesupport_cpp")
 
 install(TARGETS
-  approach_service_server
+  approach_service_server_real
+  approach_service_server_sim
   DESTINATION lib/${PROJECT_NAME}
 )
 

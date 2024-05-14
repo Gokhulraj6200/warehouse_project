@@ -8,9 +8,11 @@ from launch.actions import DeclareLaunchArgument
 def generate_launch_description():
 
     return LaunchDescription([
+
         Node(
             package='attach_shelf',
-            executable='approach_service_server',
-            name='approach_service_server',
+            executable='approach_service_server_sim',
+            name='approach_service_server_sim'
         )
+
     ])

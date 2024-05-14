@@ -14,10 +14,18 @@ def launch_setup(command, *args, **kwargs):
     if map_file == 'warehouse_map_real.yaml':
         rviz_config_dir = os.path.join(get_package_share_directory('localization_server'), 'rviz', 'real_localization.rviz')
         localization_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'real_amcl_config.yaml')
+        service_server = 'approach_service_server_real'
+        execute_process = [
+        ExecuteProcess(
+            cmd=['ros2', 'service', 'call', 
+                 '/reinitialize_global_localization', 'std_srvs/srv/Empty'],         
+            output='screen')]
         use_sim_time = False
     else:
         rviz_config_dir = os.path.join(get_package_share_directory('localization_server'), 'rviz', 'sim_localization.rviz')
         localization_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'amcl_config.yaml')
+        service_server = 'approach_service_server_sim'
+        execute_process = []
         use_sim_time = True
 
     return [
@@ -44,12 +52,15 @@ def launch_setup(command, *args, **kwargs):
             parameters=[{'use_sim_time': use_sim_time},
                         {'autostart': True},
                         {'node_names': ['map_server', 'amcl']}]),
-
+        
         Node(
             package='attach_shelf',
-            executable='approach_service_server',
-            name='approach_service_server',
+            executable= service_server,
+            name= service_server,
             output='screen'),
+        
+        *execute_process
+
     ]
 
 def generate_launch_description():
