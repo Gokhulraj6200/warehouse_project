@@ -15,11 +15,7 @@ def launch_setup(command, *args, **kwargs):
         rviz_config_dir = os.path.join(get_package_share_directory('localization_server'), 'rviz', 'real_localization.rviz')
         localization_yaml = os.path.join(get_package_share_directory('localization_server'), 'config', 'real_amcl_config.yaml')
         service_server = 'approach_service_server_real'
-        execute_process = [
-        ExecuteProcess(
-            cmd=['ros2', 'service', 'call', 
-                 '/reinitialize_global_localization', 'std_srvs/srv/Empty'],         
-            output='screen')]
+        execute_process = []
         use_sim_time = False
     else:
         rviz_config_dir = os.path.join(get_package_share_directory('localization_server'), 'rviz', 'sim_localization.rviz')
