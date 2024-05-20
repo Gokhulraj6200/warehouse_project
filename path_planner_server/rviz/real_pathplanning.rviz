@@ -9,6 +9,7 @@ Panels:
         - /Map1/Topic1
         - /ParticleCloud1/Topic1
         - /global_costmap1/Topic1
+        - /local_costmap1/Status1
       Splitter Ratio: 0.5
     Tree Height: 553
   - Class: rviz_common/Selection
@@ -76,6 +77,10 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        cart_center:
+          Value: true
+        cart_frame:
+          Value: true
         map:
           Value: true
         robot_base_docking_contact_link:
@@ -139,6 +144,10 @@ Visualization Manager:
       Show Names: false
       Tree:
         map:
+          cart_center:
+            {}
+          cart_frame:
+            {}
           robot_odom:
             robot_base_footprint:
               robot_base_link:
@@ -174,6 +183,12 @@ Visualization Manager:
                 {}
               robot_top_cover_link:
                 {}
+            robot_cart_laser:
+              {}
+            robot_cart_laser_noisy:
+              {}
+            robot_cart_laser_noisy_0:
+              {}
             robot_docking_station_laser:
               {}
             robot_docking_station_laser_noisy:
@@ -197,9 +212,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 3805
+      Max Intensity: 1540
       Min Color: 0; 0; 0
-      Min Intensity: 295
+      Min Intensity: 292
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
@@ -323,7 +338,7 @@ Visualization Manager:
       Value: true
     - Alpha: 0.699999988079071
       Class: rviz_default_plugins/Map
-      Color Scheme: costmap
+      Color Scheme: map
       Draw Behind: false
       Enabled: true
       Name: global_costmap
@@ -391,7 +406,7 @@ Visualization Manager:
       Value: true
     - Alpha: 0.699999988079071
       Class: rviz_default_plugins/Map
-      Color Scheme: costmap
+      Color Scheme: map
       Draw Behind: false
       Enabled: true
       Name: keepout_mask
@@ -471,10 +486,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.8003977537155151
+      Pitch: 0.6953977346420288
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.063580513000488
+      Yaw: 6.018581390380859
     Saved: ~
 Window Geometry:
   Displays:

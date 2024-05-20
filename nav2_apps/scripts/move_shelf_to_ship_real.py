@@ -231,118 +231,118 @@ def main():
     # move the robot back
     elevator_publisher.move_back()
 
-    # # move the robot to midpoint to avoid collision
-    # request_item_location = 'Midpoint'
-    # shelf_item_pose = PoseStamped()
-    # shelf_item_pose.header.frame_id = 'map'
-    # shelf_item_pose.header.stamp = navigator.get_clock().now().to_msg()
-    # shelf_item_pose.pose.position.x = shelf_positions[request_item_location][0]
-    # shelf_item_pose.pose.position.y = shelf_positions[request_item_location][1]
-    # shelf_item_pose.pose.orientation.z = shelf_positions[request_item_location][2]
-    # shelf_item_pose.pose.orientation.w = shelf_positions[request_item_location][3]
-    # print(f'Wait for few seconds before moving to shipping position')
-    # elevator_publisher.wait()
-    # print('Moving robot to ' + request_item_location + '.')
-    # navigator.goToPose(shelf_item_pose)
+    # move the robot to midpoint to avoid collision
+    request_item_location = 'Midpoint'
+    shelf_item_pose = PoseStamped()
+    shelf_item_pose.header.frame_id = 'map'
+    shelf_item_pose.header.stamp = navigator.get_clock().now().to_msg()
+    shelf_item_pose.pose.position.x = shelf_positions[request_item_location][0]
+    shelf_item_pose.pose.position.y = shelf_positions[request_item_location][1]
+    shelf_item_pose.pose.orientation.z = shelf_positions[request_item_location][2]
+    shelf_item_pose.pose.orientation.w = shelf_positions[request_item_location][3]
+    print(f'Wait for few seconds before moving to shipping position')
+    elevator_publisher.wait()
+    print('Moving robot to ' + request_item_location + '.')
+    navigator.goToPose(shelf_item_pose)
 
-    # i = 0
-    # while not navigator.isTaskComplete():
-    #     i = i + 1
-    #     feedback = navigator.getFeedback()
-    #     if feedback and i % 5 == 0:
-    #         print('Estimated time of arrival at ' + request_item_location +
-    #               ' for worker: ' + '{0:.0f}'.format(
-    #                   Duration.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9)
-    #               + ' seconds.')
+    i = 0
+    while not navigator.isTaskComplete():
+        i = i + 1
+        feedback = navigator.getFeedback()
+        if feedback and i % 5 == 0:
+            print('Estimated time of arrival at ' + request_item_location +
+                  ' for worker: ' + '{0:.0f}'.format(
+                      Duration.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9)
+                  + ' seconds.')
 
-    # result = navigator.getResult()
-    # if result == TaskResult.SUCCEEDED:
-    #     print('Reached the middle of the corridor.')
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        print('Reached the middle of the corridor.')
 
-    # elif result == TaskResult.CANCELED:
-    #     print('Task at ' + request_item_location +
-    #           ' was canceled. Returning to staging point...')
-    #     initial_pose.header.stamp = navigator.get_clock().now().to_msg()
-    #     navigator.goToPose(initial_pose)
+    elif result == TaskResult.CANCELED:
+        print('Task at ' + request_item_location +
+              ' was canceled. Returning to staging point...')
+        initial_pose.header.stamp = navigator.get_clock().now().to_msg()
+        navigator.goToPose(initial_pose)
 
-    # elif result == TaskResult.FAILED:
-    #     print('Task at ' + request_item_location + ' failed!')
-    #     exit(-1)
+    elif result == TaskResult.FAILED:
+        print('Task at ' + request_item_location + ' failed!')
+        exit(-1)
 
-    # # go to the shipping position
-    # request_item_location = 'shipping_position'
-    # shelf_item_pose = PoseStamped()
-    # shelf_item_pose.header.frame_id = 'map'
-    # shelf_item_pose.header.stamp = navigator.get_clock().now().to_msg()
-    # shelf_item_pose.pose.position.x = shelf_positions[request_item_location][0]
-    # shelf_item_pose.pose.position.y = shelf_positions[request_item_location][1]
-    # shelf_item_pose.pose.orientation.z = shelf_positions[request_item_location][2]
-    # shelf_item_pose.pose.orientation.w = shelf_positions[request_item_location][3]
-    # print('Moving robot to ' + request_item_location + '.')
-    # navigator.goToPose(shelf_item_pose)
+    # go to the shipping position
+    request_item_location = 'shipping_position'
+    shelf_item_pose = PoseStamped()
+    shelf_item_pose.header.frame_id = 'map'
+    shelf_item_pose.header.stamp = navigator.get_clock().now().to_msg()
+    shelf_item_pose.pose.position.x = shelf_positions[request_item_location][0]
+    shelf_item_pose.pose.position.y = shelf_positions[request_item_location][1]
+    shelf_item_pose.pose.orientation.z = shelf_positions[request_item_location][2]
+    shelf_item_pose.pose.orientation.w = shelf_positions[request_item_location][3]
+    print('Moving robot to ' + request_item_location + '.')
+    navigator.goToPose(shelf_item_pose)
 
-    # i = 0
-    # while not navigator.isTaskComplete():
-    #     i = i + 1
-    #     feedback = navigator.getFeedback()
-    #     if feedback and i % 5 == 0:
-    #         print('Estimated time of arrival at ' + request_item_location +
-    #               ' for worker: ' + '{0:.0f}'.format(
-    #                   Duration.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9)
-    #               + ' seconds.')
+    i = 0
+    while not navigator.isTaskComplete():
+        i = i + 1
+        feedback = navigator.getFeedback()
+        if feedback and i % 5 == 0:
+            print('Estimated time of arrival at ' + request_item_location +
+                  ' for worker: ' + '{0:.0f}'.format(
+                      Duration.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9)
+                  + ' seconds.')
 
-    # result = navigator.getResult()
-    # if result == TaskResult.SUCCEEDED:
-    #     print('Unloading the shelf.')
-    #     footprint_publisher.publish_robot_footprint()
-    #     elevator_publisher.drop()
-    #     elevator_publisher.move_back()
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        print('Unloading the shelf.')
+        footprint_publisher.publish_robot_footprint()
+        elevator_publisher.drop()
+        elevator_publisher.move_back()
 
-    # elif result == TaskResult.CANCELED:
-    #     print('Task at ' + request_item_location +
-    #           ' was canceled. Returning to staging point...')
-    #     initial_pose.header.stamp = navigator.get_clock().now().to_msg()
-    #     navigator.goToPose(initial_pose)
+    elif result == TaskResult.CANCELED:
+        print('Task at ' + request_item_location +
+              ' was canceled. Returning to staging point...')
+        initial_pose.header.stamp = navigator.get_clock().now().to_msg()
+        navigator.goToPose(initial_pose)
 
-    # elif result == TaskResult.FAILED:
-    #     print('Task at ' + request_item_location + ' failed!')
-    #     exit(-1)
+    elif result == TaskResult.FAILED:
+        print('Task at ' + request_item_location + ' failed!')
+        exit(-1)
 
-    # return to the initial position
-    # request_item_location = 'init_position'
-    # shelf_item_pose = PoseStamped()
-    # shelf_item_pose.header.frame_id = 'map'
-    # shelf_item_pose.header.stamp = navigator.get_clock().now().to_msg()
-    # shelf_item_pose.pose.position.x = shelf_positions[request_item_location][0]
-    # shelf_item_pose.pose.position.y = shelf_positions[request_item_location][1]
-    # shelf_item_pose.pose.orientation.z = shelf_positions[request_item_location][2]
-    # shelf_item_pose.pose.orientation.w = shelf_positions[request_item_location][3]
-    # print('Moving robot to ' + request_item_location + '.')
-    # navigator.goToPose(shelf_item_pose)
+    #return to the initial position
+    request_item_location = 'init_position'
+    shelf_item_pose = PoseStamped()
+    shelf_item_pose.header.frame_id = 'map'
+    shelf_item_pose.header.stamp = navigator.get_clock().now().to_msg()
+    shelf_item_pose.pose.position.x = shelf_positions[request_item_location][0]
+    shelf_item_pose.pose.position.y = shelf_positions[request_item_location][1]
+    shelf_item_pose.pose.orientation.z = shelf_positions[request_item_location][2]
+    shelf_item_pose.pose.orientation.w = shelf_positions[request_item_location][3]
+    print('Moving robot to ' + request_item_location + '.')
+    navigator.goToPose(shelf_item_pose)
 
-    # i = 0
-    # while not navigator.isTaskComplete():
-    #     i = i + 1
-    #     feedback = navigator.getFeedback()
-    #     if feedback and i % 5 == 0:
-    #         print('Estimated time of arrival at ' + request_item_location +
-    #               ' for worker: ' + '{0:.0f}'.format(
-    #                   Duration.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9)
-    #               + ' seconds.')
+    i = 0
+    while not navigator.isTaskComplete():
+        i = i + 1
+        feedback = navigator.getFeedback()
+        if feedback and i % 5 == 0:
+            print('Estimated time of arrival at ' + request_item_location +
+                  ' for worker: ' + '{0:.0f}'.format(
+                      Duration.from_msg(feedback.estimated_time_remaining).nanoseconds / 1e9)
+                  + ' seconds.')
 
-    # result = navigator.getResult()
-    # if result == TaskResult.SUCCEEDED:
-    #     print('Task completed.')
+    result = navigator.getResult()
+    if result == TaskResult.SUCCEEDED:
+        print('Task completed.')
 
-    # elif result == TaskResult.CANCELED:
-    #     print('Task at ' + request_item_location +
-    #           ' was canceled. Returning to staging point...')
-    #     initial_pose.header.stamp = navigator.get_clock().now().to_msg()
-    #     navigator.goToPose(initial_pose)
+    elif result == TaskResult.CANCELED:
+        print('Task at ' + request_item_location +
+              ' was canceled. Returning to staging point...')
+        initial_pose.header.stamp = navigator.get_clock().now().to_msg()
+        navigator.goToPose(initial_pose)
 
-    # elif result == TaskResult.FAILED:
-    #     print('Task at ' + request_item_location + ' failed!')
-    #     exit(-1)
+    elif result == TaskResult.FAILED:
+        print('Task at ' + request_item_location + ' failed!')
+        exit(-1)
 
 
     while not navigator.isTaskComplete():
